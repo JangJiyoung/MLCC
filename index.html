@@ -2,118 +2,94 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MLCC 기억력 자가진단</title>
     <style>
-        :root {
-            --primary-color: #1A365D; /* 네이비 */
-            --accent-color: #3182CE; /* 블루 */
-            --bg-ivory: #FDFBF7;    /* 연한 아이보리 배경 */
-            --card-bg: #FFFFFF;     /* 카드 흰색 */
-        }
-
-        body { 
-            background-color: var(--bg-ivory);
-            font-family: 'Pretendard', -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .card { 
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 460px;
-            padding: 40px 25px;
-            border-radius: 30px;
-            /* 아이보리 배경에 어울리는 부드러운 그림자 */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .header h2 { color: var(--primary-color); margin-bottom: 8px; font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px; }
-        .header p { color: #718096; font-size: 1rem; margin-bottom: 30px; }
-
-        .progress-bar { width: 100%; height: 8px; background: #F1F1F1; border-radius: 10px; margin-bottom: 40px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent-color); width: 0%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        :root { --primary-color: #1A365D; --accent-color: #3182CE; --bg-ivory: #FDFBF7; --card-bg: #FFFFFF; }
+        body { background-color: var(--bg-ivory); font-family: 'Pretendard', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: var(--card-bg); width: 100%; max-width: 460px; padding: 40px 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); text-align: center; }
         
-        #question-text { 
-            font-size: 1.3rem; font-weight: 700; color: #2D3748; 
-            line-height: 1.6; min-height: 100px; margin-bottom: 35px;
-            display: flex; align-items: center; justify-content: center;
-            word-break: keep-all; transition: opacity 0.2s;
-        }
+        /* 공통 스타일 */
+        .header h2 { color: var(--primary-color); margin-bottom: 8px; font-size: 1.6rem; font-weight: 800; }
+        .header p { color: #718096; font-size: 0.95rem; margin-bottom: 25px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button { cursor: pointer; transition: all 0.2s; border: 1px solid #E2E8F0; border-radius: 15px; font-family: inherit; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 14px; }
+        /* 인트로(정보입력) 스타일 */
+        .info-section { text-align: left; margin-bottom: 20px; }
+        .info-label { font-weight: 700; color: var(--primary-color); margin-bottom: 10px; display: block; }
+        .select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+        .age-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 30px; }
+        .opt-btn { padding: 12px; background: #fff; font-weight: 600; color: #4A5568; }
+        .opt-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+        .start-btn { width: 100%; padding: 18px; background: var(--accent-color); color: #fff; border: none; font-size: 1.1rem; font-weight: 700; border-radius: 15px; }
+
+        /* 설문 스타일 */
+        #survey-area, #result-area { display: none; }
+        .progress-bar { width: 100%; height: 6px; background: #F1F1F1; border-radius: 10px; margin-bottom: 35px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent-color); width: 0%; transition: 0.4s; }
+        #question-text { font-size: 1.25rem; font-weight: 700; color: #2D3748; line-height: 1.5; min-height: 100px; margin-bottom: 30px; word-break: keep-all; }
+        .choice-btn { padding: 18px; font-size: 1.05rem; font-weight: 600; background: #fff; color: #4A5568; }
+
+        /* 결과 스타일 */
+        .score-display { font-size: 4rem; font-weight: 900; color: var(--accent-color); margin: 15px 0; }
+        .user-summary { background: #EDF2F7; padding: 15px; border-radius: 12px; font-size: 0.9rem; color: #4A5568; margin-bottom: 20px; display: inline-block; width: 100%; box-sizing: border-box; }
+        #result-msg { font-size: 1rem; line-height: 1.7; color: #4A5568; margin-bottom: 25px; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 15px; }
         
-        button.choice-btn { 
-            padding: 20px; border: 1px solid #E2E8F0; border-radius: 18px; 
-            font-size: 1.1rem; cursor: pointer; transition: all 0.2s; 
-            font-weight: 700; background: #FFFFFF; color: #4A5568;
-            outline: none;
-        }
-
-        /* 버튼 클릭/활성화 시 스타일 */
-        button.choice-btn.active {
-            background: var(--primary-color) !important;
-            color: white !important;
-            border-color: var(--primary-color) !important;
-            transform: scale(0.97);
-        }
-
-        .footer-logo { 
-            margin-top: 40px; padding-top: 25px;
-            border-top: 1px solid #F1F1F1;
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-        }
-        .logo-box {
-            background: var(--primary-color); padding: 5px 12px; border-radius: 6px;
-            color: white; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px;
-        }
-        .logo-subtext { font-size: 0.95rem; font-weight: 700; color: var(--primary-color); opacity: 0.9; }
-
-        #result-area { display: none; animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .score-display { font-size: 4.5rem; font-weight: 900; color: var(--accent-color); margin: 20px 0; }
-        #result-msg { font-size: 1.1rem; line-height: 1.7; color: #4A5568; margin-bottom: 35px; word-break: keep-all; }
-        
-        .retry-btn {
-            width: 100%; background: #2D3748; color: white; padding: 18px; 
-            border-radius: 15px; border: none; cursor: pointer; font-weight: 700; font-size: 1rem;
-        }
+        .footer-logo { margin-top: 30px; padding-top: 20px; border-top: 1px solid #F1F1F1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .logo-box { background: var(--primary-color); padding: 4px 10px; border-radius: 5px; color: white; font-weight: 800; font-size: 0.9rem; }
+        .logo-subtext { font-size: 0.8rem; font-weight: 700; color: var(--primary-color); }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <!-- 설문 영역 -->
-    <div id="survey-area">
+    <!-- 1. 정보 입력 영역 -->
+    <div id="intro-area">
         <div class="header">
-            <h2>기억력 자가진단</h2>
-            <p>세미나 시작 전 나의 뇌 건강 상태</p>
+            <h2>진단 전 정보 입력</h2>
+            <p>정확한 분석을 위해 정보를 선택해주세요.</p>
         </div>
+        
+        <div class="info-section">
+            <span class="info-label">성별</span>
+            <div class="select-grid">
+                <button class="opt-btn gender-opt" onclick="selectOpt('gender', '남성', this)">남성</button>
+                <button class="opt-btn gender-opt" onclick="selectOpt('gender', '여성', this)">여성</button>
+            </div>
+
+            <span class="info-label">연령대</span>
+            <div class="age-grid">
+                <button class="opt-btn age-opt" onclick="selectOpt('age', '30대', this)">30대</button>
+                <button class="opt-btn age-opt" onclick="selectOpt('age', '40대', this)">40대</button>
+                <button class="opt-btn age-opt" onclick="selectOpt('age', '50대', this)">50대</button>
+                <button class="opt-btn age-opt" onclick="selectOpt('age', '60대', this)">60대</button>
+                <button class="opt-btn age-opt" onclick="selectOpt('age', '70대+', this)">70대+</button>
+            </div>
+        </div>
+        <button class="start-btn" onclick="startSurvey()">진단 시작하기</button>
+    </div>
+
+    <!-- 2. 설문 영역 -->
+    <div id="survey-area">
+        <div class="header"><h2>기억력 자가진단</h2></div>
         <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
         <div id="question-text"></div>
         <div class="btn-group">
-            <button class="choice-btn" id="btn-yes" onclick="handleAnswer(1, 'btn-yes')">네, 그렇습니다</button>
-            <button class="choice-btn" id="btn-no" onclick="handleAnswer(0, 'btn-no')">아니오, 아닙니다</button>
+            <button class="choice-btn" onclick="handleAnswer(1)">네, 자주 그렇습니다</button>
+            <button class="choice-btn" onclick="handleAnswer(0)">아니오, 그렇지 않습니다</button>
         </div>
     </div>
 
-    <!-- 결과 영역 -->
+    <!-- 3. 결과 영역 -->
     <div id="result-area">
         <div class="header"><h2>나의 뇌 건강 점수</h2></div>
-        <div class="score-display" id="final-score">100점</div>
-        <p id="result-msg"></p>
-        <button class="retry-btn" onclick="location.reload()">다시 테스트하기</button>
+        <div class="user-summary" id="user-summary"></div>
+        <div class="score-display" id="final-score">0점</div>
+        <div id="result-msg"></div>
+        <button class="start-btn" onclick="location.reload()" style="background:#4A5568;">다시 테스트하기</button>
     </div>
 
-    <!-- 로고 영역 -->
     <div class="footer-logo">
         <div class="logo-box">MLCC</div>
         <div class="logo-subtext">마인드 셋 라이프 코칭센터</div>
@@ -121,28 +97,51 @@
 </div>
 
 <script>
+    // 수집될 데이터 객체
+    let userData = {
+        gender: "",
+        age: "",
+        score: 0,
+        timestamp: ""
+    };
+
     const questions = [
-        "1. 물건을 어디 뒀는지 몰라 5분 이상 찾은 적이 일주일에 3회 이상인가요?",
-        "2. 아는 사람의 이름이 입가에서만 맴돌고 선뜻 나오지 않나요?",
-        "3. 분명히 할 일이 있어 방에 들어갔는데, '내가 왜 왔지?' 하며 멍해진 적이 있나요?",
-        "4. 통화 중인데 내 휴대폰이 어디 있나 찾은 적이 있나요?",
-        "5. 오늘 점심에 드신 메뉴 3가지를 3초 안에 떠올리기 힘드신가요?",
-        "6. 며칠 전에 나눈 대화 내용이 기억나지 않아 당황한 적이 있나요?",
-        "7. 가스불을 껐는지, 현관문을 잠갔는지 몰라 다시 확인하러 가시나요?",
-        "8. 예전에 비해 새로운 정보를 습득하는 속도가 느려졌다고 느끼나요?",
-        "9. 단어가 생각나지 않아 '그거 있잖아' 같은 표현을 자주 쓰시나요?",
-        "10. 스마트폰 없이는 가족 전화번호 3개 이상 외우기 힘드신가요?"
+        "1. 물건을 둔 곳이 기억나지 않아 5분 이상 찾은 적이 일주일에 3회 이상인가요?",
+        "2. 잘 아는 사람의 이름이 입가에서만 맴돌고 선뜻 떠오르지 않나요?",
+        "3. 어떤 일을 하러 방에 들어갔다가 '왜 왔지?' 하며 멍해진 적이 있나요?",
+        "4. 통화 중에 내 스마트폰이 어디 있는지 찾은 적이 있나요?",
+        "5. 오늘 점심 식사 메뉴 3가지를 3초 안에 떠올리기 힘드신가요?",
+        "6. 며칠 전 나눈 대화 내용이 전혀 기억나지 않아 당황한 적이 있나요?",
+        "7. 가스불이나 현관문을 확인했는지 불안해 다시 돌아간 적이 있나요?",
+        "8. 예전에 비해 새로운 정보를 배우거나 익히는 속도가 느려졌나요?",
+        "9. 단어가 생각나지 않아 '그거 있잖아' 같은 대명사를 자주 쓰시나요?",
+        "10. 스마트폰 없이 가족의 전화번호를 3개 이상 외우기 힘드신가요?"
     ];
 
     let currentIndex = 0;
-    let totalScore = 100; // 100점에서 시작 (감점 방식)
+    let yesCount = 0;
+
+    // 성별 및 연령 선택 함수
+    function selectOpt(type, value, btn) {
+        userData[type] = value;
+        const btns = document.querySelectorAll(`.${type}-opt`);
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function startSurvey() {
+        if (!userData.gender || !userData.age) {
+            alert("성별과 연령대를 모두 선택해주세요!");
+            return;
+        }
+        document.getElementById('intro-area').style.display = 'none';
+        document.getElementById('survey-area').style.display = 'block';
+        updateUI();
+    }
 
     function updateUI() {
         const qText = document.getElementById('question-text');
         const progress = document.getElementById('progress');
-        
-        document.querySelectorAll('.choice-btn').forEach(btn => btn.classList.remove('active'));
-
         if (currentIndex < questions.length) {
             qText.innerText = questions[currentIndex];
             progress.style.width = ((currentIndex + 1) / questions.length * 100) + "%";
@@ -151,44 +150,34 @@
         }
     }
 
-    function handleAnswer(value, btnId) {
-        document.getElementById(btnId).classList.add('active');
-        
-        // '네'를 선택하면 10점 감점
-        if (value === 1) {
-            totalScore -= 10;
-        }
-        
+    function handleAnswer(value) {
+        if (value === 1) yesCount++;
         currentIndex++;
-
-        setTimeout(() => {
-            const qArea = document.getElementById('question-text');
-            qArea.style.opacity = 0;
-            setTimeout(() => {
-                updateUI();
-                qArea.style.opacity = 1;
-            }, 150);
-        }, 300);
+        updateUI();
     }
 
     function showResult() {
+        userData.score = 100 - (yesCount * 10);
+        userData.timestamp = new Date().toLocaleString();
+
         document.getElementById('survey-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'block';
         
-        document.getElementById('final-score').innerText = totalScore + "점";
-        const msg = document.getElementById('result-msg');
+        document.getElementById('user-summary').innerText = `대상자 정보: ${userData.gender} / ${userData.age}`;
+        document.getElementById('final-score').innerText = userData.score + "점";
         
-        // 점수 구간별 결과 로직
-        if (totalScore >= 80) {
-            msg.innerHTML = "<strong>[양호] 뇌 건강이 아주 좋습니다!</strong><br>현재의 인지 능력을 잘 유지하고 계시네요. 오늘 배울 기술을 통해 당신의 기억력을 '강력한 무기'로 만드세요.";
-        } else if (totalScore > 60) {
-            msg.innerHTML = "<strong>[주의] 건망증 관리 단계입니다.</strong><br>집중력이 흐트러지기 쉬운 상태입니다. 간단한 훈련과 습관 변화만으로도 충분히 회복할 수 있습니다.";
+        const msg = document.getElementById('result-msg');
+        if (userData.score >= 80) {
+            msg.innerHTML = "<strong>✅ [양호] 아주 훌륭합니다!</strong><br>현재 매우 높은 인지 능력을 유지하고 계십니다.";
+        } else if (userData.score >= 60) {
+            msg.innerHTML = "<strong>⚠️ [주의] 관리가 필요합니다.</strong><br>뇌가 다소 피로를 느끼고 있으며 집중력이 흐트러진 상태입니다.";
         } else {
-            msg.innerHTML = "<strong>[위험] 뇌 피로도가 매우 높습니다.</strong><br>건망증 증상이 심화된 상태입니다. 오늘 세미나에서 제안하는 '메모리 디톡스'와 '기억 구조화'가 시급합니다.";
+            msg.innerHTML = "<strong>🚨 [위험] 피로도가 매우 높습니다.</strong><br>기억 구조화와 뇌 휴식이 절실히 필요한 상태입니다.";
         }
-    }
 
-    updateUI();
+        // 관리를 위한 콘솔 출력 (추후 이 데이터를 서버로 전송 가능)
+        console.log("최종 수집 데이터:", userData);
+    }
 </script>
 
 </body>
