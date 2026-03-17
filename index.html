@@ -167,12 +167,19 @@
         document.getElementById('final-score').innerText = userData.score + "점";
         
         const msg = document.getElementById('result-msg');
+        const isSenior = ['50대', '60대', '70대+'].includes(userData.age); // 50대 이상 판별
+
         if (userData.score >= 80) {
-            msg.innerHTML = "<strong>✅ [양호] 아주 훌륭합니다!</strong><br>현재 매우 높은 인지 능력을 유지하고 계십니다.";
+            msg.innerHTML = "<strong>✅ [양호] 아주 훌륭한 상태입니다!</strong><br><br>지혜와 경험이 풍부한 시기에 인지 능력까지 잘 유지하고 계시네요. 오늘 배울 '마인드 셋' 기술을 더하면 일상의 활력이 더욱 커질 것입니다.";
         } else if (userData.score >= 60) {
-            msg.innerHTML = "<strong>⚠️ [주의] 관리가 필요합니다.</strong><br>뇌가 다소 피로를 느끼고 있으며 집중력이 흐트러진 상태입니다.";
+            msg.innerHTML = "<strong>⚠️ [주의] 조금의 관리가 필요한 시기입니다.</strong><br><br>최근 신경 쓰실 일이 많으셨나요? 뇌가 잠시 숨을 고르고 싶어 하는 신호입니다. 오늘 세미나에서 전해드릴 간단한 습관만으로도 충분히 맑은 정신을 되찾으실 수 있습니다.";
         } else {
-            msg.innerHTML = "<strong>🚨 [위험] 피로도가 매우 높습니다.</strong><br>기억 구조화와 뇌 휴식이 절실히 필요한 상태입니다.";
+            // 50대 이상이면서 60점 미만인 경우 특별 위로 문구
+            if (isSenior) {
+                msg.innerHTML = "<strong>🌿 [쉼표] 뇌에 따뜻한 휴식이 필요한 때입니다.</strong><br><br>그동안 너무 부지런히 달려오신 탓에 뇌가 잠시 지쳐있는 상태입니다. 결코 능력이 부족한 것이 아니라, <b>'비움과 정리'</b>가 필요한 시점일 뿐입니다. 오늘 MLCC와 함께 뇌를 편안하게 해주는 비법을 나누어 보겠습니다.";
+            } else {
+                msg.innerHTML = "<strong>🚨 [알림] 효율적인 뇌 사용법이 필요합니다.</strong><br><br>현재 뇌의 피로도가 매우 높아 일상에 불편함을 느끼실 수 있습니다. 오늘 세미나에서 제안하는 '메모리 디톡스' 솔루션으로 뇌의 활력을 되찾는 연습을 시작해보세요.";
+            }
         }
 
         // 관리를 위한 콘솔 출력 (추후 이 데이터를 서버로 전송 가능)
