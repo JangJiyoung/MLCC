@@ -177,6 +177,17 @@
 
         // 관리를 위한 콘솔 출력 (추후 이 데이터를 서버로 전송 가능)
         console.log("최종 수집 데이터:", userData);
+
+        // (기존 점수 계산 및 결과 메시지 출력 코드 유지)
+        //userData.score = 100 - (yesCount * 10);
+        
+        // 데이터 전송 로직 추가
+        fetch('https://script.google.com/macros/s/AKfycbz7pEc2rz8TJLFWvwRAnlXCSH6YttA50mSWX5Rec0zv5Es9iTb2XTgszLTb91mb-w_YIw/exec', {
+            method: 'POST',
+            body: JSON.stringify(userData)
+        })
+        .then(response => console.log('데이터 저장 완료'))
+        .catch(error => console.error('에러 발생:', error));
     }
 </script>
 
