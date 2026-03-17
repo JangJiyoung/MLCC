@@ -41,6 +41,7 @@
         .logo-subtext { font-size: 0.8rem; font-weight: 700; color: var(--primary-color); }
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body>
 
 <div class="card">
@@ -131,7 +132,10 @@
 
     function startSurvey() {
         if (!userData.gender || !userData.age) {
-            alert("성별과 연령대를 모두 선택해주세요!");
+            //alert("성별과 연령대를 모두 선택해주세요!");
+            // 기본 alert 대신 사용
+            Swal.fire('안녕하세요!', '성별과 연령대를 모두 선택해주세요!', 'success');
+
             return;
         }
         document.getElementById('intro-area').style.display = 'none';
