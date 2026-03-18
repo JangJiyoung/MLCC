@@ -103,6 +103,7 @@
         gender: "",
         age: "",
         score: 0,
+        location: "권한 거부", // 기본값
         timestamp: ""
     };
 
@@ -173,6 +174,8 @@
         const msg = document.getElementById('result-msg');
         const isSenior = ['50대', '60대', '70대+'].includes(userData.age); // 50대 이상 판별
 
+        fetchLocationAndSubmit();
+
         if (userData.score >= 80) {
             msg.innerHTML = "<strong>✅ [양호] 아주 훌륭한 상태입니다!</strong><br><br>지혜와 경험이 풍부한 시기에 인지 능력까지 잘 유지하고 계시네요. 오늘 배울 '마인드 셋' 기술을 더하면 일상의 활력이 더욱 커질 것입니다.";
         } else if (userData.score >= 60) {
@@ -193,12 +196,47 @@
         //userData.score = 100 - (yesCount * 10);
         
         // 데이터 전송 로직 추가
+        /*
         fetch('https://script.google.com/macros/s/AKfycbz7pEc2rz8TJLFWvwRAnlXCSH6YttA50mSWX5Rec0zv5Es9iTb2XTgszLTb91mb-w_YIw/exec', {
             method: 'POST',
             body: JSON.stringify(userData)
         })
         .then(response => console.log('데이터 저장 완료'))
         .catch(error => console.error('에러 발생:', error));
+        */
+       fetchLocationAndSubmit();
+    }
+
+    // 2. 위치 정보 수집 및 전송 (백그라운드 처리)
+    function fetchLocationAndSubmit() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyJ81OulYBW7A9751erdtqdfc4htPNggX726bBjjrij-zEtynngdGRlH7rALiIpjNU3/exec';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // 시트에만 보낼 위치 데이터 생성
+                    userData.location = `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`;
+                    sendToGoogle(scriptURL, userData);
+                },
+                () => {
+                    // 권한 거부 시에도 기본값으로 전송
+                    sendToGoogle(scriptURL, userData);
+                },
+                { timeout: 5000 } // 5초 이내에 응답 없을 시 다음 단계
+            );
+        } else {
+            sendToGoogle(scriptURL, userData);
+        }
+    }
+    // 3. 실제 구글 시트 전송 함수
+    function sendToGoogle(url, data) {
+        fetch(url, {
+            method: 'POST',
+            mode: 'no-cors', // CORS 문제 방지
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(err => console.log('전송 실패:', err));
     }
 </script>
 
