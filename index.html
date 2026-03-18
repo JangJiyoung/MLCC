@@ -230,11 +230,15 @@
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw2ehpuOB9JrrkTKqTQOEUhwoR75Smd9_6c6kWf2opu7Nf7Rxz9fzguW-R_veo9t3Bciw/exec';
         
         // GET 파라미터 방식으로 전송 (가장 확실함)
-        const finalUrl = scriptURL + "?gender=" + encodeURIComponent(userData.gender) + 
+        const finalUrl = scriptURL + 
+                         "?gender=" + encodeURIComponent(userData.gender) + 
                          "&age=" + encodeURIComponent(userData.age) + 
                          "&score=" + userData.score + 
                          "&location=" + encodeURIComponent(userData.location);
-    
+
+        const img = new Image();
+        img.src = finalUrl;
+        
         fetch(finalUrl, { method: 'POST', mode: 'no-cors' })
         .then(() => console.log("전송 완료: " + userData.location))
         .catch(e => console.error("전송 에러", e));
