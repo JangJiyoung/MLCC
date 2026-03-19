@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLCC 기억력 자가진단</title>
+    <title>몸 건강 마음 건강 자가진단 - MLCC</title>
+    <!-- SweetAlert2 라이브러리 -->
+    <!--<script src="https://cdn.jsdelivr.net"></script> -->
     <style>
         :root { --danger: #ff4d4f; --warning: #faad14; --success: #52c41a; --primary: #4a90e2; --bg: #f0f4f8; }
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
@@ -38,6 +40,32 @@
         .footer-logo { margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
         .logo-box { font-weight: 900; font-size: 1.4rem; color: #2c3e50; }
         .logo-subtext { font-size: 0.85rem; color: #aaa; margin-top: 5px; }
+
+		.custom-swal-input {
+		    width: 85% !important; 
+		    height: 48px !important; 
+		    margin: 10px auto !important; 
+		    font-size: 1rem !important;
+		    border-radius: 12px !important;
+		    /* 테두리를 기존보다 조금 더 진하게 변경 */
+		    border: 1.5px solid #bbb !important; 
+		    padding: 0 15px !important;
+		    box-sizing: border-box !important;
+		    outline: none !important;
+		    color: #333; /* 입력되는 글자색 */
+		}
+		
+		/* 플레이스홀더 글씨를 더 흐리게 설정 */
+		.custom-swal-input::placeholder {
+		    color: #ccc !important;
+		    font-weight: 300;
+		}
+		
+		/* 포커스 시 테두리 색상 강조 */
+		.custom-swal-input:focus {
+		    border-color: var(--primary) !important;
+		    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1) !important;
+		}
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -77,7 +105,7 @@
     <!-- [결과 영역] -->
     <div id="result-area">
         <div style="margin-bottom:20px;">
-            <span style="font-size:1.1rem; color:#666; font-weight:bold;">나의 뇌 건강 점수</span>
+            <span style="font-size:1.1rem; color:#666; font-weight:bold;">나의 기혈 순환 점수</span>
             <div class="big-score-num" id="final-score-val">0<span style="font-size:1.5rem; margin-left:5px;">점</span></div>
         </div>
         <div class="result-card" id="result-card">
@@ -173,7 +201,7 @@
         document.getElementById('survey-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'block';
         
-        var final100 = Math.round((totalScore / 20) * 100); // 6개 유효문항 만점 20점 기준
+        var final100 = Math.round((totalScore / 20) * 100); // 6개 유효문항 만점 12점 기준
         if(final100 > 100) final100 = 100;
 
         var scoreVal = document.getElementById('final-score-val');
@@ -183,92 +211,84 @@
 
         scoreVal.innerHTML = final100 + '<span style="font-size:1.5rem; margin-left:5px;">점</span>';
         document.getElementById('user-info-text').innerText = userData.age + " " + userData.gender + " 참가자 분석 리포트";
-		const isSenior = ['50대', '60대', '70대+'].includes(userData.age); // 50대 이상 판별
-		
+
         if (final100 >= 80) {
-            head.innerText = "✅ [양호] 아주 훌륭한 상태입니다!";
+            head.innerText = "✅ 비교적 양호";
             head.style.backgroundColor = "var(--success)";
             scoreVal.style.color = "var(--success)";
             card.style.borderColor = "var(--success)";
-            advice.innerHTML = "아주 훌륭한 상태입니다! 세미나를 통해 <b>지혜와 경험이 풍부한 시기에 인지 능력까지 잘 유지하고 계시네요</b>;
+            advice.innerHTML = "기혈 흐름이 원활합니다! 세미나를 통해 <b>'더 맑은 기운을 유지하는 법'</b>을 익혀보세요.";
         } else if (final100 >= 60) {
-            head.innerText = "⚠️ [주의] 조금의 관리가 필요한 시기입니다.";
+            head.innerText = "⚠️ 에너지 불균형";
             head.style.backgroundColor = "var(--warning)";
             scoreVal.style.color = "var(--warning)";
             card.style.borderColor = "var(--warning)";
             advice.innerHTML = "순환 기운이 불안정합니다. <b>'일상적인 자가 순환 관리'</b>를 통해 기운을 북돋아 주세요.";
         } else {
-			 if (isSenior) {
-				head.innerText = "🌿 [쉼표] 뇌에 따뜻한 휴식이 필요한 때입니다.";
-				head.style.backgroundColor = "var(--danger)";
-				scoreVal.style.color = "var(--danger)";
-				card.style.borderColor = "var(--danger)";
-				advice.innerHTML = "그동안 너무 부지런히 달려오신 탓에 뇌가 잠시 지쳐있는 상태입니다. 결코 능력이 부족한 것이 아니라, <b>'비움과 정리'</b>가 필요한 시점일 뿐입니다. 오늘 MLCC와 함께 뇌를 편안하게 해주는 비법을 나누어 보겠습니다.";
-			} else {
-				head.innerText = "🚨 [알림] 효율적인 뇌 사용법이 필요합니다.";
-				head.style.backgroundColor = "var(--danger)";
-				scoreVal.style.color = "var(--danger)";
-				card.style.borderColor = "var(--danger)";
-				advice.innerHTML = "현재 뇌의 피로도가 매우 높아 일상에 불편함을 느끼실 수 있습니다. 오늘 세미나에서 제안하는 '메모리 디톡스' 솔루션으로 뇌의 활력을 되찾는 연습을 시작해보세요.";
-			}
+            head.innerText = "🚨 기혈 정체 주의";
+            head.style.backgroundColor = "var(--danger)";
+            scoreVal.style.color = "var(--danger)";
+            card.style.borderColor = "var(--danger)";
+            advice.innerHTML = "현재 순환이 정체된 상태입니다. 세미나에서 배울 <b>'기운을 즉각 뚫어주는 경락법'</b>이 꼭 필요합니다.";
         }
     }
 
     // 세미나 신청 팝업 및 데이터 전송
-    async function openApplyModal() {
-    // 세미나 관련 이미지 URL (실제 이미지 주소로 교체하세요)
-		const seminarImg = "http://zioncheonan.iptime.org:8000/seminar/Semina_Health.png";
-
-		const { value: formValues } = await Swal.fire({
-			title: '기혈 순환 세미나 신청',
-			html: `
-				<img src="${seminarImg}" style="width:100%; border-radius:10px; margin-bottom:15px;">
-				<p style="font-size:0.9rem; color:#666; margin-bottom:15px;">건망증 탈출, 지금 신청하세요!</p>
-				<input id="swal-input-name" class="swal2-input" placeholder="성함 입력">
-				<input id="swal-input-phone" class="swal2-input" placeholder="전화번호 (010-0000-0000)" maxlength="13">
-			`,
-			didOpen: () => {
-				const phoneInput = document.getElementById('swal-input-phone');
-				// 전화번호 자동 하이픈 로직
-				phoneInput.addEventListener('input', (e) => {
-					let val = e.target.value.replace(/[^0-9]/g, '');
-					if (val.length <= 3) {
-						e.target.value = val;
-					} else if (val.length <= 7) {
-						e.target.value = val.slice(0, 3) + '-' + val.slice(3);
-					} else {
-						e.target.value = val.slice(0, 3) + '-' + val.slice(3, 7) + '-' + val.slice(7, 11);
-					}
-				});
-			},
-			focusConfirm: false,
-			confirmButtonText: '신청하기',
-			confirmButtonColor: 'var(--primary)',
-			showCancelButton: true,
-			cancelButtonText: '취소',
-			preConfirm: () => {
-				const name = document.getElementById('swal-input-name').value;
-				const phone = document.getElementById('swal-input-phone').value;
-				// 유효성 검사 (성함 2자 이상, 전화번호 13자 형식)
-				if (!name || name.length < 2) {
-					Swal.showValidationMessage('성함을 정확히 입력해주세요.');
-					return false;
-				}
-				if (!phone || phone.length < 13) {
-					Swal.showValidationMessage('전화번호 형식을 확인해주세요. (010-0000-0000)');
-					return false;
-				}
-				return { name, phone };
-			}
-		});
-
-		if (formValues) {
-			sendToGoogleSheet(formValues);
-		}
+	async function openApplyModal() {
+	    // 세미나 홍보 이미지 URL을 입력하세요
+	    const seminarImg = "img/Semina_Health.png"; 
+	
+	    const { value: formValues } = await Swal.fire({
+	        // 제목을 더 굵고 크게 강조 (font-weight: 800)
+	        title: '<div style="font-weight:800; font-size:1.4rem; color:#222; letter-spacing:-0.5px;">세미나 신청하기</div>',
+	        html: `
+	            <!-- 이미지 영역: 가느다란 테두리(border)와 둥근 모서리(border-radius) 적용 -->
+	            <div style="width:100%; overflow:hidden; border-radius:15px; border:1px solid #eee; margin-bottom:12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+	                <img src="${seminarImg}" style="width:100%; display:block; object-fit:cover;">
+	            </div>
+	            <p style="font-size:0.85rem; color:#777; margin-bottom:18px; line-height:1.4;">정확한 정보를 입력하시면<br>세미나 상세 일정을 안내해 드립니다.</p>
+	            
+	            <input id="swal-input-name" class="custom-swal-input" placeholder="성함 입력" style="display:block;">
+	            <input id="swal-input-phone" class="custom-swal-input" placeholder="전화번호 (010-0000-0000)" maxlength="13" style="display:block;">
+	        `,
+	        didOpen: () => {
+	            const phoneInput = document.getElementById('swal-input-phone');
+	            phoneInput.addEventListener('input', (e) => {
+	                let val = e.target.value.replace(/[^0-9]/g, '');
+	                if (val.length <= 3) e.target.value = val;
+	                else if (val.length <= 7) e.target.value = val.slice(0, 3) + '-' + val.slice(3);
+	                else e.target.value = val.slice(0, 3) + '-' + val.slice(3, 7) + '-' + val.slice(7, 11);
+	            });
+	        },
+	        confirmButtonText: '신청 완료하기',
+	        confirmButtonColor: 'var(--primary)',
+	        showCancelButton: true,
+	        cancelButtonText: '닫기',
+	        width: '90%', 
+	        padding: '25px 15px',
+	        borderRadius: '25px', // 팝업창 자체도 둥글게
+	        preConfirm: () => {
+	            const name = document.getElementById('swal-input-name').value;
+	            const phone = document.getElementById('swal-input-phone').value;
+	            if (!name || name.length < 2) {
+	                Swal.showValidationMessage('성함을 2자 이상 입력해주세요.');
+	                return false;
+	            }
+	            if (!phone || phone.length < 13) {
+	                Swal.showValidationMessage('전화번호 13자리를 확인해주세요.');
+	                return false;
+	            }
+	            return { name, phone };
+	        }
+	    });
+	
+	    if (formValues) {
+	        sendToGoogleSheet(formValues);
+	    }
 	}
 	
 	async function sendToGoogleSheet(formValues) {
-		const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywe64WESw-aDXdJkgvN_ZABY-nICrRX5mjc5xJ1a1qecROWGePQfASjgILWqH3EJsESg/exec'; // 실제 배포한 URL로 교체
+		const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMKl7DZPYlugy_-SaFZsMHvCu-Vx_h38k_qBNQFhR1onUt3ICX0Za_lC3Az15im-vj_Q/exec'; // 실제 배포한 URL로 교체
 
 		const payload = {
 			gender: userData.gender,
