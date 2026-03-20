@@ -201,7 +201,7 @@
         document.getElementById('survey-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'block';
         
-        var final100 = Math.round((totalScore / 20) * 100); // 5개 유효문항 만점 20점 기준
+        var final100 = Math.round((totalScore / 10) * 100); // 5개 유효문항 만점 10점 기준
         if(final100 > 100) final100 = 100;
 
         var scoreVal = document.getElementById('final-score-val');
