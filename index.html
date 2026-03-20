@@ -155,7 +155,7 @@
     function startSurvey() {
         if (!userData.gender || !userData.age) {
             // 요청하신 Swal 문법 적용
-            Swal.fire('안녕하세요!', '성별과 연령대를 모두 선택해주세요!', 'success');
+            Swal.fire('안내', '성별과 연령대를 모두 선택해주세요!', 'warning');
             return;
         }
         document.getElementById('intro-area').style.display = 'none';
@@ -191,17 +191,25 @@
 
     // 답변 클릭 시 처리
     function handleAnswer(score) {
-        totalScore += score;
-        currentIndex++;
-        updateUI();
-    }
+		if (window.isAnswered) return;
+		window.isAnswered = true;
+
+		totalScore += score;
+		currentIndex++;
+
+		setTimeout(() => {
+			window.isAnswered = false;
+			updateUI();
+		}, 200);
+	}
 
     // 결과 출력 함수
     function showResult() {
         document.getElementById('survey-area').style.display = 'none';
         document.getElementById('result-area').style.display = 'block';
         
-        var final100 = Math.round((totalScore / 20) * 100); // 6개 유효문항 만점 20점 기준
+        var maxScore = questions.length * 2;
+		var final100 = Math.round((totalScore / maxScore) * 100); // 5개 유효문항 만점 10점 기준
         if(final100 > 100) final100 = 100;
 
         var scoreVal = document.getElementById('final-score-val');
@@ -311,7 +319,7 @@
 
 			const response = await fetch(SCRIPT_URL, {
 				method: 'POST',
-				mode: 'no-cors', // 구글 앱 스크립트 특성상 no-cors가 필요할 수 있음
+				mode: 'cors', // 구글 앱 스크립트 특성상 no-cors가 필요할 수 있음
 				cache: 'no-cache',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload)
