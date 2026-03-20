@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,20 +19,13 @@ jobs:
     continue-on-error: ${{ matrix.node-version == 24 }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Check version
-        run: node -v
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
+      - run: node -v
+      - run: npm ci
+      - run: npm test
